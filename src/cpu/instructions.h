@@ -1,6 +1,7 @@
 #ifndef INSTRUCTIONS_H
 #define INSTRUCTIONS_H
 
+// Instruction set
 #define I_NOP        0x00
 #define I_CPUID      0x01
 #define I_CSP        0x02
@@ -45,10 +46,12 @@
 #define I_LAR16      0x42
 #define I_LAR32      0x43
 
+// Interrupts
 #define C_EXIT       0x00
-#define C_WCHAR      0x01
-#define C_RCHAR      0x02
-#define C_RCHAE      0x03
+#define C_WRITE      0x01
+#define C_WRCHR      0x02
+#define C_RCHAR      0x03
+#define C_RCHAE      0x04
 
 #endif
 
