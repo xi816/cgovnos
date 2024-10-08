@@ -2,12 +2,12 @@
 
 CGovnOS is a Govno Core 32 processor virtual machine for the GovnOS operating system.
 
-Compilation:
+## Compilation:
   The ./build script is used for building the sources to an executable using `gcc`.
-  $ ./build
+  `$ ./build`
 
-Usage:
+## Usage:
   To run the virtual machine, use:
-  $ ./govnos file
+  `$ ./govnos file`
   You can try some example programs from the `examples/` directory.
 
