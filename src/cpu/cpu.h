@@ -157,12 +157,14 @@ U0 StackDiv(GC32* gccpu) {
 }
 
 #include "../dumps.h"
-U16 flen;
 U8 Execute(GC32 GC) {
   U16 Arg1;
+  U16 Arg2;
 
   while (true) {
     switch (GC.mem[GC.regs.PC]) {
+      case I_NOP:
+        break;
       case I_CPUID:
         StackPushInl(&GC, MEMSIZE);
         break;
@@ -180,6 +182,39 @@ U8 Execute(GC32 GC) {
         break;
       case I_JMP:
         GC.regs.PC = FetchWordRev(&GC, GC.regs.PC+1)-1;
+        break;
+      case I_JMI:
+        U8 condition = FetchByte(&GC, GC.regs.PC+1);
+        switch (condition) {
+          case B_JMI_EQ:
+            if (StackPop(&GC) == 1) {
+              GC.regs.PC = FetchWordRev(&GC, GC.regs.PC+2)-1;
+            }
+            else {
+              GC.regs.PC += 3;
+            }
+            break;
+          case B_JMI_NEQ:
+            if (StackPop(&GC) == 0) {
+              GC.regs.PC = FetchWordRev(&GC, GC.regs.PC+2)-1;
+            }
+            else {
+              GC.regs.PC += 3;
+            }
+            break;
+          default:
+            fprintf(stderr, "%sUnknown JMI operand: %02X\r\n", ERROR, condition);
+            exit(1);
+        }
+        break;
+      case I_CMP:
+        Arg1 = StackPop(&GC);
+        Arg2 = StackPop(&GC);
+        StackPushInl(&GC, (Arg1 == Arg2));
+        break;
+      case I_CMIM:
+        Arg1 = StackPop(&GC);
+        StackPushInl(&GC, (Arg1 != 0));
         break;
       case I_PUSH:
         StackPush(&GC);
@@ -222,11 +257,11 @@ U8 Execute(GC32 GC) {
             PutByte(Arg1);
             break;
           default:
-            fprintf(stderr, "%sUnknown interrupt %02Xh\n", ERROR, call);
+            fprintf(stderr, "%sUnknown interrupt %02Xh\r\n", ERROR, call);
         }
         break;
       default:
-        fprintf(stderr, "%sUnknown instruction %02X\n  At position %04X\n", ERROR, GC.mem[GC.regs.PC], GC.regs.PC);
+        fprintf(stderr, "%sUnknown instruction %02X\r\n  At position %04X\r\n", ERROR, GC.mem[GC.regs.PC], GC.regs.PC);
         return 1;
     }
     GC.regs.PC++;

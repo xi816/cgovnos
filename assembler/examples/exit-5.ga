@@ -1,0 +1,5 @@
+MAIN:
+  PUSH 5
+  PUSH 0
+  INT
+

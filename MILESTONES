@@ -1,0 +1,11 @@
+Stack (√)
+Add, Subtract, Multiply, Divide (√)
+Interrupt for exiting (√)
+Jump to memory addresses (√)
+Compare values (√)
+Jump conditionally if two values are equal (√)
+Interrupt for writing characters (√)
+Interrupt for writing strings until NULL (√)
+
+Interrupt for reading a character and storing to memory (x)
+

@@ -52,6 +52,12 @@
 #define C_WRCHR      0x02
 #define C_RCHAR      0x03
 #define C_RCHAE      0x04
+#define C_RIBTE      0x05
+#define C_RIWRD      0x06
+
+// JMI condition table
+#define B_JMI_EQ     0x00
+#define B_JMI_NEQ    0x01
 
 #endif
 

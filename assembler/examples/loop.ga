@@ -1,0 +1,7 @@
+MAIN:
+  PUSH 65
+  PUSH 2
+  INT
+
+  JMP MAIN
+

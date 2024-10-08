@@ -6,7 +6,7 @@
 #include "../lib/namings.h"
 #include "../lib/flsize.h"
 
-#define MEMSIZE flen
+#define MEMSIZE 4096
 #include "cpu/cpu.h"
 #include "cpu/instructions.h"
 
@@ -18,7 +18,7 @@ I32 main(I32 argc, U8** argv) {
     fprintf(stderr, "%sFile %s not found\n", ERROR, argv[1]);
     return 2;
   }
-  flen = FileSize(fl);
+  U16 flen = FileSize(fl);
   GC.mem = malloc(flen);
   fseek(fl, 0, SEEK_SET);
   fread(GC.mem, 1, flen, fl);
