@@ -1,9 +1,0 @@
-#!/usr/bin/bash
-
-build () {
-	gcc -lcurses src/main.c -o govnos;
-}
-
-# Build
-build;
-
