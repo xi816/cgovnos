@@ -54,6 +54,11 @@
 #define C_RCHAE      0x04
 #define C_RIBTE      0x05
 #define C_RIWRD      0x06
+#define C_VIDEO      0x10
+
+// VIDEO interrupts
+#define INT_VIDEO_CLEAR            0x00
+#define INT_VIDEO_SLEEP            0x0A
 
 // JMI condition table
 #define B_JMI_EQ     0x00

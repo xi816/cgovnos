@@ -255,9 +255,27 @@ U8 Execute(GC32 GC) {
           case C_WRCHR:
             Arg1 = StackPop(&GC);
             PutByte(Arg1);
+            refresh();
+            break;
+          case C_VIDEO:
+            Arg1 = StackPop(&GC);
+            switch (Arg1) {
+              case INT_VIDEO_SLEEP:
+                Arg2 = StackPop(&GC);
+                sleep(Arg2);
+                break;
+             case INT_VIDEO_CLEAR:
+                clear();
+                refresh();
+                break;
+              default:
+                fprintf(stderr, "%sUnknown video interrupt %02Xh\r\n", ERROR, Arg1);
+                return 1;
+            }
             break;
           default:
             fprintf(stderr, "%sUnknown interrupt %02Xh\r\n", ERROR, call);
+            return 1;
         }
         break;
       default:
