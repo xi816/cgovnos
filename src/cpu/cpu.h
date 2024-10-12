@@ -12,13 +12,6 @@
 
 // Registers structure
 struct Registers {
-  I16 A;
-  I16 X;
-  I16 Y;
-  I32 CA;
-  I32 CX;
-  I32 CY;
-
   U16 SP;
   U16 CS;
   U16 PC;
@@ -40,20 +33,6 @@ U0 ResetSP(GC32* gccpu) {
 // Reset the PC register
 U0 ResetPC(GC32* gccpu) {
   gccpu->regs.PC = 0x0000;
-}
-
-// Reset the 16-bit general purpose registers (A, X, Y).
-U0 ResetAXY(GC32* gccpu) {
-  gccpu->regs.A = 0x0000;
-  gccpu->regs.X = 0x0000;
-  gccpu->regs.Y = 0x0000;
-}
-
-// Reset the 32-bit general purpose registers (CA, CX, CY).
-U0 ResetCAXY(GC32* gccpu) {
-  gccpu->regs.CA = 0x00000000;
-  gccpu->regs.CX = 0x00000000;
-  gccpu->regs.CY = 0x00000000;
 }
 
 // Reset flags
@@ -169,16 +148,10 @@ U8 Execute(GC32 GC) {
         StackPushInl(&GC, MEMSIZE);
         break;
       case I_CSP:
-        GC.regs.Y = getch();
+        StackPushInl(&GC, getch());
         break;
       case I_FLF:
         GC.regs.FLAGS = 0x00;
-        break;
-      case I_FLRA:
-        ResetAXY(&GC);
-        break;
-      case I_FLRB:
-        ResetCAXY(&GC);
         break;
       case I_JMP:
         GC.regs.PC = FetchWordRev(&GC, GC.regs.PC+1)-1;

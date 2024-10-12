@@ -1,9 +1,0 @@
-MAIN:
-  PUSH 65
-  PUSH 2
-  INT
-
-  PUSH 0
-  PUSH 0
-  INT
-

@@ -32,8 +32,6 @@ I32 main(I32 argc, U8** argv) {
   initCPU:
   ResetSP(&GC);
   ResetPC(&GC);
-  ResetAXY(&GC);
-  ResetCAXY(&GC);
 
   runProgram:
   U8 exitcode = Execute(GC);

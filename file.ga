@@ -1,0 +1,18 @@
+MAIN:
+  PUSH %41
+  PUSH %02
+  INT
+  PUSH %42
+  PUSH %02
+  INT
+  PUSH %0A
+  PUSH %02
+  INT
+  PUSH %47
+  PUSH %02
+  INT
+
+  PUSH %00
+  PUSH %00
+  INT
+

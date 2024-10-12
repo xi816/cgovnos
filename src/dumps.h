@@ -12,9 +12,6 @@ U0 StackDump(GC32* GC, I16 size) {
 
 U0 RegDump(GC32* gccpu) {
   printf("Registers:\r\n");
-  printf("CA A: %s%08X\033[0m %s%04X\033[0m\r\n", BgB_FgW, gccpu->regs.CA, BgB_FgW, gccpu->regs.A);
-  printf("CX X: %s%08X\033[0m %s%04X\033[0m\r\n", BgB_FgW, gccpu->regs.CX, BgB_FgW, gccpu->regs.X);
-  printf("CY Y: %s%08X\033[0m %s%04X\033[0m\r\n", BgB_FgW, gccpu->regs.CY, BgB_FgW, gccpu->regs.Y);
   printf("SP: %s%04X\033[0m\r\n", BgB_FgW, gccpu->regs.SP);
   printf("CS: %s%04X\033[0m\r\n", BgB_FgW, gccpu->regs.CS);
   printf("PC: %s%04X\033[0m\r\n", BgB_FgW, gccpu->regs.PC);
