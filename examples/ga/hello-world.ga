@@ -1,0 +1,11 @@
+JMP MAIN
+  HELLO: BYTES "Hello, World!$^@"
+MAIN:
+  PUSH HELLO
+  PUSH 1
+  INT
+
+  PUSH 0
+  PUSH 0
+  INT
+

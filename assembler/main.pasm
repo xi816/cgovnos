@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import os;
 import sys;
 
@@ -8,11 +10,12 @@ T_BYT = 0x02;
 T_WOR = 0x03;
 T_LAB = 0x04;
 T_0ID = 0x05;
-T_EOL = 0x06;
+T_CHR = 0x06;
+T_EOL = 0x07;
 T_EOF = 0xFF;
 HUMAN = [
   "INST", "INT", "BYTE", "WORD", "LABEL",
-  "ID", "EOL"
+  "ID", "CHR", "EOL"
 ];
 HUMAN += (["UNKNOWN" for i in range(255-len(HUMAN))]);
 HUMAN.append("EOF");
@@ -38,7 +41,7 @@ KSZ = {
   "DUP": 1,
   "INT": 1,
   "JMP": 3,
-  "JMI": 4,
+  "JMI": 1,
   "CEQ": 1,
   "CNEQ": 1
 };
@@ -55,6 +58,29 @@ def Lex(prog: str):
     if (prog[pos] == "\0"):
       toks.append((T_EOF,));
       return toks, 0;
+    elif (prog[pos] == ";"):
+      pos += 1;
+      while (prog[pos] != "\n"):
+        pos += 1;
+      pos += 1;
+    elif (prog[pos] == "\""):
+      pos += 1;
+      while (prog[pos] != "\""):
+        if (prog[pos] == "$"):
+          buf += "\n";
+        elif (prog[pos] == "^"):
+          pos += 1;
+          if (ord(prog[pos]) in range(65, 91)):
+            buf += chr(ord(prog[pos])-64);
+          elif (prog[pos] == "@"):
+            buf += "\0";
+        else:
+          buf += prog[pos];
+        pos += 1;
+        cpos += 1;
+      pos += 1;
+      toks.append((T_CHR, buf, cpos));
+      buf = "";
     elif (prog[pos] in WHI):
       pos += 1;
     elif (prog[pos] == "%"):
@@ -70,6 +96,7 @@ def Lex(prog: str):
       toks.append((T_INT, int(buf, base=basemode)));
       basemode = 10;
       buf = "";
+      cpos += 1;
     elif (prog[pos] in CAP):
       while (prog[pos] in CAP):
         buf += prog[pos];
@@ -81,11 +108,13 @@ def Lex(prog: str):
         if (buf in KEY):
           toks.append((T_INS, buf, cpos));
           cpos += KSZ[buf];
+        elif (buf == "BYTES"):
+          toks.append((T_BYT, buf, cpos));
         else:
           toks.append((T_0ID, buf));
       buf = "";
     else:
-      print(f"\033[31mUnknown\033[0m character {hex(ord(prog[pos]))[2:].upper():0>2}");
+      print(f"\033[31m    Unknown\033[0m character {hex(ord(prog[pos]))[2:].upper():0>2}");
       return [], 1;
 
   return [], 1;
@@ -108,6 +137,8 @@ def PrintTokens(prog: list):
         print(f"    [%{hex(i)[2:].upper():0>4}] {HUMAN[j[0]]}");
       elif (len(j) == 2):
         print(f"    [%{hex(i)[2:].upper():0>4}] {HUMAN[j[0]]}-{j[1]}");
+      elif (len(j) == 3):
+        print(f"    [%{hex(i)[2:].upper():0>4}] {HUMAN[j[0]]}-{j[1]}-{j[2]}");
     else:
       if (len(j) == 2):
         print(f"    [%{hex(i)[2:].upper():0>4}] [%{hex(j[1])[2:].upper():0>4}] {HUMAN[j[0]]}");
@@ -123,11 +154,27 @@ def Govnbin(prog: list, labs: dict):
       pos += 1;
       if (prog[pos][0] == T_EOL):
         pos += 1;
+    elif (prog[pos][0] == T_BYT):
+      pos += 1;
+      while (prog[pos][0] != T_EOL):
+        if (prog[pos][0] == T_INT):
+          code.append(prog[pos][1] % 256);
+        elif (prog[pos][0] == T_CHR):
+          for i in prog[pos][1]:
+            code.append(ord(i) % 256);
+        pos += 1;
+      pos += 1;
     elif (prog[pos][0] == T_INS):
       if (prog[pos][1] == "PUSH"):
-        code.append(0x19);
-        code.append(prog[pos+1][1] >> 8);
-        code.append(prog[pos+1][1] % 256);
+        if (prog[pos+1][0] == T_INT):
+          code.append(0x19);
+          code.append(prog[pos+1][1] >> 8);
+          code.append(prog[pos+1][1] % 256);
+        elif (prog[pos+1][0] == T_0ID):
+          val = labs[prog[pos+1][1]];
+          code.append(0x19);
+          code.append(val >> 8);
+          code.append(val % 256);
         pos += 2;
         if (prog[pos][0] == T_EOL):
           pos += 1;
@@ -144,10 +191,10 @@ def Govnbin(prog: list, labs: dict):
         if (prog[pos][0] == T_EOL):
           pos += 1;
       else:
-        print(f"\033[31mUnknown\033[0m instruction {prog[pos][1]}");
+        print(f"\033[31m    Unknown\033[0m instruction {prog[pos][1]}");
         return code, 1;
     else:
-      print(f"\033[31mUnknown\033[0m token {prog[pos]}");
+      print(f"\033[31m    Unknown\033[0m token {prog[pos]}");
       return code, 1;
 
   return code, 0;
@@ -186,10 +233,11 @@ def Main(argc: int, argv: list):
   if (DBGMODE > 0):
     if (not exitcode00):
       print(f"  File {progname} compiled \033[32msuccesfully\033[0m");
-      print("   ", code);
     else:
       print(f"  File {progname} compiled \033[31munsuccesfully\033[0m");
       return 1;
+  if (DBGMODE == 2):
+    print("   ", code);
   with open(outname, "wb") as fl:
     fl.write(code);
 

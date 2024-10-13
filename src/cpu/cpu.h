@@ -40,7 +40,7 @@ U0 ResetFLAGS(GC32* gccpu) {
   gccpu->regs.FLAGS = 0x00;
 }
 
-// Write a byte correctly to the screen
+// Write a byte to the screen
 U0 PutByte(U8 a) {
   switch (a) {
     case 0x0A:
