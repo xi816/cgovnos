@@ -1,5 +1,12 @@
 MAIN:
-  PUSH 5
-  PUSH 0
+  PUSH %41
+  PUSH %02
+  INT
+  PUSH %0A
+  PUSH %02
+  INT
+
+  PUSH %00
+  PUSH %00
   INT
 

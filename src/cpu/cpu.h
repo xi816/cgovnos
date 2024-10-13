@@ -228,7 +228,6 @@ U8 Execute(GC32 GC) {
           case C_WRCHR:
             Arg1 = StackPop(&GC);
             PutByte(Arg1);
-            refresh();
             break;
           case C_VIDEO:
             Arg1 = StackPop(&GC);
