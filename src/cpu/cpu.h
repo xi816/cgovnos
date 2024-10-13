@@ -2,7 +2,6 @@
 #include <curses.h>
 
 #include "../../lib/namings.h"
-#include "../../lib/gchar.h"
 #include "../../lib/errormsg.h"
 #include "../../lib/colors.h"
 
@@ -22,6 +21,7 @@ struct Registers {
 typedef struct GC32 {
   struct Registers regs;
   U8* mem;
+  U8* rom;
 } GC32;
 
 // CPU functions
@@ -145,7 +145,7 @@ U8 Execute(GC32 GC) {
       case I_NOP:
         break;
       case I_CPUID:
-        StackPushInl(&GC, MEMSIZE);
+        StackPushInl(&GC, memsize);
         break;
       case I_CSP:
         StackPushInl(&GC, getch());

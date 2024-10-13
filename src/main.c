@@ -2,27 +2,67 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <curses.h>
+#include <string.h>
 
 #include "../lib/namings.h"
 #include "../lib/flsize.h"
 
-#define MEMSIZE 4096
+U16 memsize;
 #include "cpu/cpu.h"
 #include "cpu/instructions.h"
+#include "doc/usage.h"
 
 I32 main(I32 argc, U8** argv) {
   GC32 GC;
 
-  FILE* fl = fopen(argv[1], "rb");
-  if (!fl) {
-    fprintf(stderr, "%sFile %s not found\n", ERROR, argv[1]);
+  U8 argp = 1;
+  U16 romsize = 4096;
+
+  U8 romfn[64];
+  U8 memfn[64];
+
+  while (argp < argc) {
+    if (!strcmp(argv[argp], "-M")) {
+      memsize = atoi(argv[argp+1]);
+      argv++;
+    }
+    else if (!strcmp(argv[argp], "-ROM")) {
+      romsize = atoi(argv[argp+1]);
+      argv++;
+    }
+    else if (!strcmp(argv[argp], "-H")) {
+      Usage();
+      return 100;
+    }
+    else {
+      memcpy(romfn, argv[argp], 64);
+      memcpy(memfn, argv[argp+1], 64);
+      break;
+    }
+    argv++;
+  }
+  FILE* romfile = fopen(romfn, "rb");
+  FILE* memfile = fopen(memfn, "rb");
+  if (!romfile) {
+    fprintf(stderr, "%sROM file %s not found\n", ERROR, romfn);
     return 2;
   }
-  U16 flen = FileSize(fl);
-  GC.mem = malloc(flen);
-  fseek(fl, 0, SEEK_SET);
-  fread(GC.mem, 1, flen, fl);
-  fclose(fl);
+  if (!memfile) {
+    fprintf(stderr, "%sMemory file %s not found\n", ERROR, memfn);
+    return 2;
+  }
+  memsize = FileSize(memfile);
+
+  GC.rom = malloc(romsize);
+  GC.mem = malloc(memsize);
+
+  // Read the ROM file
+  fread(GC.rom, 1, romsize, romfile);
+  fclose(romfile);
+
+  // Read the memory
+  fread(GC.mem, 1, memsize, memfile);
+  fclose(memfile);
 
   initscr();
   cbreak();
