@@ -279,7 +279,6 @@ U8 Execute(GC32 GC) {
         return 1;
     }
     GC.regs.PC++;
-    StackDump(&GC, 10);
   }
   return 0;
 }

@@ -29,7 +29,8 @@ INTEXT = "0123456789ABCDEF";
 WHI = " \t\r";
 KEY = (
   "PUSH", "POP", "ADD", "SUB", "MUL", "DIV",
-  "DUP", "INT", "JMP", "JMI", "CEQ", "CNEQ"
+  "DUP", "INT", "JMP", "JMI", "CMP", "CMIM",
+  "LODB", "LODW", "REAB", "REAW", "RDD"
 );
 KSZ = {
   "PUSH": 3,
@@ -43,7 +44,11 @@ KSZ = {
   "JMP": 3,
   "JMI": 1,
   "CEQ": 1,
-  "CNEQ": 1
+  "CNEQ": 1,
+  "LODB": 3,
+  "LODW": 3,
+  "REAB": 3,
+  "REAW": 3,
 };
 
 # Lexer:
