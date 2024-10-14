@@ -7,7 +7,6 @@ CGovnOS is a Govno Core 16 processor virtual machine for the GovnOS operating sy
   `$ ./build`
 
 ## Usage:
-  To run the virtual machine, use:\
-  `$ ./govnos file`\
+  To run the virtual machine, use `$ ./govnos file`\
   You can try some example programs from the `examples/` directory.
 
