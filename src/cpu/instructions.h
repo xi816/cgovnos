@@ -36,15 +36,21 @@
 #define I_MUL        0x1F
 
 #define I_RDD        0x20
-#define I_LOD16      0x21
-#define I_LOD32      0x22
+#define I_REAB       0x21
+#define I_REAW       0x22
 #define I_INT        0x23
 #define I_DIV        0x24
 
-#define I_LAB16      0x40
-#define I_LAB32      0x41
-#define I_LAR16      0x42
-#define I_LAR32      0x43
+#define I_LODB       0x35
+#define I_LODW       0x36
+
+#define I_CALL       0x57
+#define I_RET        0x58
+#define I_LSP        0x5A
+#define I_LCS        0x5B
+#define I_SSP        0x5C
+#define I_SCS        0x5D
+#define I_SPC        0x5E
 
 // Interrupts
 #define C_EXIT       0x00

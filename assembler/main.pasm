@@ -98,7 +98,7 @@ def Lex(prog: str):
       buf = "";
       cpos += 1;
     elif (prog[pos] in CAP):
-      while (prog[pos] in CAP):
+      while (prog[pos] in CAP+INT+"-"):
         buf += prog[pos];
         pos += 1;
       if (prog[pos] == ":"):
@@ -152,8 +152,6 @@ def Govnbin(prog: list, labs: dict):
   while (prog[pos][0] != T_EOF):
     if (prog[pos][0] == T_LAB):
       pos += 1;
-      if (prog[pos][0] == T_EOL):
-        pos += 1;
     elif (prog[pos][0] == T_BYT):
       pos += 1;
       while (prog[pos][0] != T_EOL):
@@ -164,37 +162,49 @@ def Govnbin(prog: list, labs: dict):
             code.append(ord(i) % 256);
         pos += 1;
       pos += 1;
+    elif (prog[pos][0] == T_EOL):
+      pos += 1;
     elif (prog[pos][0] == T_INS):
       if (prog[pos][1] == "PUSH"):
-        if (prog[pos+1][0] == T_INT):
-          code.append(0x19);
-          code.append(prog[pos+1][1] >> 8);
-          code.append(prog[pos+1][1] % 256);
-        elif (prog[pos+1][0] == T_0ID):
-          val = labs[prog[pos+1][1]];
-          code.append(0x19);
-          code.append(val >> 8);
-          code.append(val % 256);
-        pos += 2;
-        if (prog[pos][0] == T_EOL):
+        pos += 1;
+        while (prog[pos][0] != T_EOL):
+          if (prog[pos][0] == T_INT):
+            code.append(0x19);
+            code.append(prog[pos][1] >> 8);
+            code.append(prog[pos][1] % 256);
+          elif (prog[pos][0] == T_0ID):
+            val = labs[prog[pos][1]];
+            code.append(0x19);
+            code.append(val >> 8);
+            code.append(val % 256);
           pos += 1;
+        pos += 1;
+      elif (prog[pos][1] == "ADD"):
+        code.append(0x1D);
+        pos += 1;
+      elif (prog[pos][1] == "SUB"):
+        code.append(0x1E);
+        pos += 1;
+      elif (prog[pos][1] == "MUL"):
+        code.append(0x1F);
+        pos += 1;
+      elif (prog[pos][1] == "DIV"):
+        code.append(0x24);
+        pos += 1;
       elif (prog[pos][1] == "JMP"):
         code.append(0x07);
         code.append(labs[prog[pos+1][1]] >> 8);
         code.append(labs[prog[pos+1][1]] % 256);
         pos += 2;
-        if (prog[pos][0] == T_EOL):
-          pos += 1;
       elif (prog[pos][1] == "INT"):
         code.append(0x23);
         pos += 1;
-        if (prog[pos][0] == T_EOL):
-          pos += 1;
       else:
         print(f"\033[31m    Unknown\033[0m instruction {prog[pos][1]}");
         return code, 1;
     else:
       print(f"\033[31m    Unknown\033[0m token {prog[pos]}");
+      print(f"      At position {pos}");
       return code, 1;
 
   return code, 0;

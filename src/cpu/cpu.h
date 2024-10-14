@@ -210,6 +210,14 @@ U8 Execute(GC32 GC) {
       case I_DIV:
         StackDiv(&GC);
         break;
+      case I_REAB:
+        StackPushInl(&GC, GC.mem[FetchWordRev(&GC, GC.regs.PC+1)]%256);
+        GC.regs.PC += 2;
+        break;
+      case I_REAW:
+        StackPushInl(&GC, GC.mem[FetchWordRev(&GC, GC.regs.PC+1)]);
+        GC.regs.PC += 2;
+        break;
       case I_INT:
         U16 call = StackPop(&GC);
         switch (call) {
@@ -250,11 +258,28 @@ U8 Execute(GC32 GC) {
             return 1;
         }
         break;
+      case I_LODB:
+        Arg1 = StackPop(&GC);
+        GC.mem[FetchWordRev(&GC, GC.regs.PC+1)] = Arg1;
+        GC.regs.PC += 2;
+        break;
+      case 0xAA: // VM special codes
+        switch (GC.mem[GC.regs.PC+1]) {
+          case 0x55:
+            while (1) {}
+          case 0x56:
+            GC.regs.PC = 0x7FFF;
+          default:
+            fprintf(stderr, "%sUnknown VM code %02X\r\n  At position %04X\r\n", ERROR, GC.mem[GC.regs.PC+1], GC.regs.PC+1);
+            return 1;
+        }
+        break;
       default:
         fprintf(stderr, "%sUnknown instruction %02X\r\n  At position %04X\r\n", ERROR, GC.mem[GC.regs.PC], GC.regs.PC);
         return 1;
     }
     GC.regs.PC++;
+    StackDump(&GC, 10);
   }
   return 0;
 }

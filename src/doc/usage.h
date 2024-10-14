@@ -1,5 +1,5 @@
 U0 Usage() {
-  printf("Usage: ./govnos <rom> <binary> [-M MEMSIZE] [-ROM ROMSIZE]\n");
+  printf("Usage: ./govnos [-M MEMSIZE] [-ROM ROMSIZE] <rom> <binary>\n");
   printf("Flags:\n");
   printf("  -H            Print usage and exit\n");
   printf("  -M SIZE       Set the memory size\n");
