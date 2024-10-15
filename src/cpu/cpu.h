@@ -1,13 +1,12 @@
 // Govno Core 32 CPU
-#include <curses.h>
+#include <termios.h>
 
+#include "../../lib/bool.h"
 #include "../../lib/namings.h"
 #include "../../lib/errormsg.h"
 #include "../../lib/colors.h"
 
 #include "instructions.h"
-
-#define NCWN endwin()
 
 // Registers structure
 struct Registers {
@@ -44,7 +43,8 @@ U0 ResetFLAGS(GC32* gccpu) {
 U0 PutByte(U8 a) {
   switch (a) {
     case 0x0A:
-      puts("\r");
+      putchar(13);
+      putchar(10);
       break;
     default:
       putchar(a);
@@ -156,7 +156,7 @@ U8 Execute(GC32 GC) {
         StackPushInl(&GC, memsize);
         break;
       case I_CSP:
-        StackPushInl(&GC, getch());
+        StackPushInl(&GC, getchar());
         break;
       case I_SHL: {
           Arg1 = StackPop(&GC);
@@ -243,8 +243,7 @@ U8 Execute(GC32 GC) {
         switch (call) {
           case C_EXIT:
             Arg1 = StackPop(&GC);
-            NCWN;
-            exit(Arg1);
+            return 3;
             break;
           case C_WRITE:
             Arg1 = StackPop(&GC);
@@ -265,8 +264,7 @@ U8 Execute(GC32 GC) {
                 sleep(Arg2);
                 break;
              case INT_VIDEO_CLEAR:
-                clear();
-                refresh();
+                printf("\033[H\033[2J");
                 break;
               default:
                 fprintf(stderr, "%sUnknown video interrupt %02Xh\r\n", ERROR, Arg1);

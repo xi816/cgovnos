@@ -12,7 +12,5 @@
 #define I32 int
 #define I64 long long int
 
-#define B0 char
-
 #endif
 

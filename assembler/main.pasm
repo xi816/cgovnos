@@ -21,7 +21,6 @@ HUMAN += (["UNKNOWN" for i in range(255-len(HUMAN))]);
 HUMAN.append("EOF");
 
 # Symbols:
-ba = bytearray;
 CAP = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 SML = "abcdefghijklmnopqrstuvwxyz";
 INT = "0123456789";
@@ -29,16 +28,18 @@ INTEXT = "0123456789ABCDEF";
 WHI = " \t\r";
 KEY = (
   "PUSH", "POP", "ADD", "SUB", "MUL", "DIV",
-  "DUP", "INT", "JMP", "JMI", "CMP", "CMIM",
+  "DUP", "INT", "JMP", "JE", "CMP", "CMIM",
   "LODB", "LODW", "REAB", "REAW", "RDD",
-  "SWAP", "SHL", "SHR"
+  "SWAP", "SHL", "SHR", "CPUID", "CPS", "JNE"
 );
 KSZ = {
   "PUSH": 3, "POP": 1, "ADD": 1, "SUB": 1,
   "MUL": 1, "DIV": 1, "DUP": 1, "INT": 1,
   "JMP": 3, "JMI": 1, "CEQ": 1, "CNEQ": 1,
   "LODB": 3, "LODW": 3, "REAB": 3, "REAW": 3,
-  "SWAP": 3, "SWAP": 3, "SHL": 3, "SHR": 3
+  "SWAP": 3, "SWAP": 3, "SHL": 3, "SHR": 3,
+  "CPUID": 1, "CPS": 1, "JE": 4, "JNE": 4,
+  "CMP": 1
 };
 
 # Lexer:
@@ -176,6 +177,9 @@ def Govnbin(prog: list, labs: dict):
             code.append(val % 256);
           pos += 1;
         pos += 1;
+      elif (prog[pos][1] == "POP"):
+        code.append(0x1A);
+        pos += 1;
       elif (prog[pos][1] == "SHL"):
         code.append(0x03);
         code.append(prog[pos+1][1] >> 8);
@@ -186,6 +190,30 @@ def Govnbin(prog: list, labs: dict):
         code.append(prog[pos+1][1] >> 8);
         code.append(prog[pos+1][1] % 256);
         pos += 3;
+      elif (prog[pos][1] == "JE"):
+        code.append(0x08);
+        code.append(0x00);
+        code.append(labs[prog[pos+1][1]] >> 8);
+        code.append(labs[prog[pos+1][1]] % 256);
+        pos += 2;
+      elif (prog[pos][1] == "CMP"):
+        code.append(0x11);
+        pos += 1;
+      elif (prog[pos][1] == "DUP"):
+        code.append(0x1B);
+        pos += 1;
+      elif (prog[pos][1] == "JNE"):
+        code.append(0x08);
+        code.append(0x01);
+        code.append(labs[prog[pos+1][1]] >> 8);
+        code.append(labs[prog[pos+1][1]] % 256);
+        pos += 2;
+      elif (prog[pos][1] == "CPUID"):
+        code.append(0x01);
+        pos += 1;
+      elif (prog[pos][1] == "CPS"):
+        code.append(0x02);
+        pos += 1;
       elif (prog[pos][1] == "ADD"):
         code.append(0x1D);
         pos += 1;

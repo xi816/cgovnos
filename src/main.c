@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <curses.h>
 #include <string.h>
+#include <termios.h>
 
+#include "main.h"
 #include "../lib/namings.h"
 #include "../lib/flsize.h"
 
@@ -12,7 +13,7 @@ U16 memsize;
 #include "cpu/instructions.h"
 #include "doc/usage.h"
 
-I32 main(I32 argc, U8** argv) {
+I32 main(I32 argc, I8** argv) {
   GC32 GC;
 
   U8 argp = 1;
@@ -64,10 +65,14 @@ I32 main(I32 argc, U8** argv) {
   fread(GC.mem, 1, memsize, memfile);
   fclose(memfile);
 
-  initscr();
-  cbreak();
-  raw();
-  noecho();
+  struct termios oldt;
+  struct termios newt;
+
+  tcgetattr(STDIN_FILENO, &oldt);
+  memcpy(&newt, &oldt, sizeof(oldt));
+  newt.c_iflag &= ~(IXON);
+  newt.c_lflag &= ~(ICANON | ECHO | ISIG | IEXTEN);
+  tcsetattr(STDIN_FILENO, TCSANOW, &newt);
 
   initCPU:
   ResetSP(&GC);
@@ -76,7 +81,7 @@ I32 main(I32 argc, U8** argv) {
   runProgram:
   U8 exitcode = Execute(GC);
 
-  NCWN;
+  old_st(oldt);
   return exitcode;
 }
 
