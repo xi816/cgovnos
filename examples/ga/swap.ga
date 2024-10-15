@@ -1,0 +1,16 @@
+MAIN:
+  PUSH 65 67
+  SWAP
+
+  PUSH 2
+  INT
+
+  PUSH 2
+  INT
+  
+  PUSH %0A 2
+  INT
+
+  PUSH 0 0
+  INT
+

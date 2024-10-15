@@ -30,25 +30,15 @@ WHI = " \t\r";
 KEY = (
   "PUSH", "POP", "ADD", "SUB", "MUL", "DIV",
   "DUP", "INT", "JMP", "JMI", "CMP", "CMIM",
-  "LODB", "LODW", "REAB", "REAW", "RDD"
+  "LODB", "LODW", "REAB", "REAW", "RDD",
+  "SWAP", "SHL", "SHR"
 );
 KSZ = {
-  "PUSH": 3,
-  "POP": 1,
-  "ADD": 1,
-  "SUB": 1,
-  "MUL": 1,
-  "DIV": 1,
-  "DUP": 1,
-  "INT": 1,
-  "JMP": 3,
-  "JMI": 1,
-  "CEQ": 1,
-  "CNEQ": 1,
-  "LODB": 3,
-  "LODW": 3,
-  "REAB": 3,
-  "REAW": 3,
+  "PUSH": 3, "POP": 1, "ADD": 1, "SUB": 1,
+  "MUL": 1, "DIV": 1, "DUP": 1, "INT": 1,
+  "JMP": 3, "JMI": 1, "CEQ": 1, "CNEQ": 1,
+  "LODB": 3, "LODW": 3, "REAB": 3, "REAW": 3,
+  "SWAP": 3, "SWAP": 3, "SHL": 3, "SHR": 3
 };
 
 # Lexer:
@@ -79,6 +69,8 @@ def Lex(prog: str):
             buf += chr(ord(prog[pos])-64);
           elif (prog[pos] == "@"):
             buf += "\0";
+          elif (prog[pos] == "$"):
+            buf += "$";
         else:
           buf += prog[pos];
         pos += 1;
@@ -184,6 +176,16 @@ def Govnbin(prog: list, labs: dict):
             code.append(val % 256);
           pos += 1;
         pos += 1;
+      elif (prog[pos][1] == "SHL"):
+        code.append(0x03);
+        code.append(prog[pos+1][1] >> 8);
+        code.append(prog[pos+1][1] % 256);
+        pos += 3;
+      elif (prog[pos][1] == "SHR"):
+        code.append(0x04);
+        code.append(prog[pos+1][1] >> 8);
+        code.append(prog[pos+1][1] % 256);
+        pos += 3;
       elif (prog[pos][1] == "ADD"):
         code.append(0x1D);
         pos += 1;
@@ -195,6 +197,9 @@ def Govnbin(prog: list, labs: dict):
         pos += 1;
       elif (prog[pos][1] == "DIV"):
         code.append(0x24);
+        pos += 1;
+      elif (prog[pos][1] == "SWAP"):
+        code.append(0x1C);
         pos += 1;
       elif (prog[pos][1] == "JMP"):
         code.append(0x07);

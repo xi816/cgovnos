@@ -1,0 +1,11 @@
+MAIN:
+  PUSH %20
+  SHL 1
+  PUSH 1
+  ADD
+  PUSH 2
+  INT
+
+  PUSH 0 0
+  INT
+

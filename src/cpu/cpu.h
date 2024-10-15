@@ -103,6 +103,14 @@ U0 StackDup(GC32* gccpu) {
   StackPushInl(gccpu, FetchWord(gccpu, gccpu->regs.SP+2));
 }
 
+// Swap two words (16 bits) in the stack
+U0 StackSwap(GC32* gccpu) {
+  I16 a = StackPop(gccpu);
+  I16 b = StackPop(gccpu);
+  StackPushInl(gccpu, a);
+  StackPushInl(gccpu, b);
+}
+
 // Add two word values (16 bits) in the stack
 U0 StackAdd(GC32* gccpu) {
   U16 a = FetchWord(gccpu, gccpu->regs.SP+4);
@@ -150,9 +158,18 @@ U8 Execute(GC32 GC) {
       case I_CSP:
         StackPushInl(&GC, getch());
         break;
-      case I_FLF:
-        GC.regs.FLAGS = 0x00;
-        break;
+      case I_SHL: {
+          Arg1 = StackPop(&GC);
+          I16 a = FetchWordRev(&GC, GC.regs.PC+1);
+          StackPushInl(&GC, Arg1<<a);
+          GC.regs.PC += 2;
+        } break;
+      case I_SHR: {
+          Arg1 = StackPop(&GC);
+          I16 a = FetchWordRev(&GC, GC.regs.PC+1);
+          StackPushInl(&GC, Arg1>>a);
+          GC.regs.PC += 2;
+        } break;
       case I_JMP:
         GC.regs.PC = FetchWordRev(&GC, GC.regs.PC+1)-1;
         break;
@@ -197,6 +214,9 @@ U8 Execute(GC32 GC) {
         break;
       case I_DUP:
         StackDup(&GC);
+        break;
+      case I_SWAP:
+        StackSwap(&GC);
         break;
       case I_ADD:
         StackAdd(&GC);
@@ -279,6 +299,7 @@ U8 Execute(GC32 GC) {
         return 1;
     }
     GC.regs.PC++;
+    // StackDump(&GC, 10);
   }
   return 0;
 }

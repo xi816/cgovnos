@@ -18,3 +18,11 @@ U0 RegDump(GC32* gccpu) {
   printf("\r\n");
 }
 
+U0 MemDump(GC32* gccpu) {
+  printf("PC: %04X\r\n", gccpu->regs.PC);
+  for (I16 i = 0; i < 10; i++) {
+    printf("{%04X} -> %02X\r\n", gccpu->regs.PC+i, gccpu->mem[gccpu->regs.PC+i]);
+  }
+  printf("\r\n");
+}
+

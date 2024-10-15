@@ -5,8 +5,8 @@
 #define I_NOP        0x00
 #define I_CPUID      0x01
 #define I_CSP        0x02
-#define I_FLF        0x03
-#define I_FLRA       0x04
+#define I_SHL        0x03
+#define I_SHR        0x04
 #define I_FLRB       0x05
 #define I_FLRC       0x06
 #define I_JMP        0x07
