@@ -280,7 +280,7 @@ U8 Execute(GC32 GC) {
         GC.mem[FetchWordRev(&GC, GC.regs.PC+1)] = Arg1;
         GC.regs.PC += 2;
         break;
-      case 0xAA: // VM special codes
+      case 0xA9: // VM special codes
         switch (GC.mem[GC.regs.PC+1]) {
           case 0x55:
             while (1) {}
