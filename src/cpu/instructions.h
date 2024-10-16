@@ -11,14 +11,8 @@
 #define I_FLRC       0x06
 #define I_JMP        0x07
 #define I_JMI        0x08
-#define I_RAD        0x09
-#define I_RADI       0x0A
-#define I_RSU        0x0B
-#define I_RSUI       0x0C
-#define I_RML        0x0D
-#define I_RMLI       0x0E
-#define I_RDV        0x0F
-#define I_DRVI       0x10
+
+#define I_RDDW       0x10
 #define I_CMP        0x11
 #define I_CMIM       0x12
 #define I_AND        0x13
@@ -35,11 +29,13 @@
 #define I_SUB        0x1E
 #define I_MUL        0x1F
 
-#define I_RDD        0x20
+#define I_RDDB       0x20
 #define I_REAB       0x21
 #define I_REAW       0x22
 #define I_INT        0x23
 #define I_DIV        0x24
+#define I_RDDBB      0x25
+#define I_RDDWR      0x26
 
 #define I_LODB       0x35
 #define I_LODW       0x36

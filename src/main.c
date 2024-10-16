@@ -65,14 +65,7 @@ I32 main(I32 argc, I8** argv) {
   fread(GC.mem, 1, memsize, memfile);
   fclose(memfile);
 
-  struct termios oldt;
-  struct termios newt;
-
-  tcgetattr(STDIN_FILENO, &oldt);
-  memcpy(&newt, &oldt, sizeof(oldt));
-  newt.c_iflag &= ~(IXON);
-  newt.c_lflag &= ~(ICANON | ECHO | ISIG | IEXTEN);
-  tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+  new_st;
 
   initCPU:
   ResetSP(&GC);
@@ -81,7 +74,7 @@ I32 main(I32 argc, I8** argv) {
   runProgram:
   U8 exitcode = Execute(GC);
 
-  old_st(oldt);
+  old_st;
   return exitcode;
 }
 
