@@ -172,6 +172,14 @@ U8 Execute(GC32 GC) {
       case I_JMP:
         GC.regs.PC = FetchWordRev(&GC, GC.regs.PC+1)-1;
         break;
+      case I_CALL:
+        StackPushInl(&GC, GC.regs.PC+3);
+        GC.regs.PC = FetchWordRev(&GC, GC.regs.PC+1)-1;
+        break;
+      case I_RET:
+        Arg1 = StackPop(&GC)-1;
+        GC.regs.PC = Arg1;
+        break;
       case I_JMI:
         U8 condition = FetchByte(&GC, GC.regs.PC+1);
         switch (condition) {

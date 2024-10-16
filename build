@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 build () {
-	gcc -lcurses src/main.c -o govnos;
+	gcc -lcurses src/main.c -o gc16;
 }
 
 # Build

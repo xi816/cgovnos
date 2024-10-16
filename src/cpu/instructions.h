@@ -7,10 +7,11 @@
 #define I_CSP        0x02
 #define I_SHL        0x03
 #define I_SHR        0x04
-#define I_FLRB       0x05
-#define I_FLRC       0x06
+#define I_MOD        0x05
+#define I_CALL       0x06
 #define I_JMP        0x07
 #define I_JMI        0x08
+#define I_RET        0x09
 
 #define I_RDDW       0x10
 #define I_CMP        0x11
@@ -40,8 +41,6 @@
 #define I_LODB       0x35
 #define I_LODW       0x36
 
-#define I_CALL       0x57
-#define I_RET        0x58
 #define I_LSP        0x5A
 #define I_LCS        0x5B
 #define I_SSP        0x5C
