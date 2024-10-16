@@ -43,7 +43,6 @@ U0 ResetFLAGS(GC32* gccpu) {
 U0 PutByte(U8 a) {
   switch (a) {
     case 0x0A:
-      putchar(13);
       putchar(10);
       break;
     default:
