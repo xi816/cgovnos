@@ -30,7 +30,8 @@ KEY = (
   "PUSH", "POP", "ADD", "SUB", "MUL", "DIV",
   "DUP", "INT", "JMP", "JE", "CMP", "CMIM",
   "LODB", "LODW", "REAB", "REAW", "RDD",
-  "SWAP", "SHL", "SHR", "CPUID", "CPS", "JNE"
+  "SWAP", "SHL", "SHR", "CPUID", "CPS", "JNE",
+  "CALL", "RET"
 );
 KSZ = {
   "PUSH": 3, "POP": 1, "ADD": 1, "SUB": 1,
@@ -39,7 +40,7 @@ KSZ = {
   "LODB": 3, "LODW": 3, "REAB": 3, "REAW": 3,
   "SWAP": 3, "SWAP": 3, "SHL": 3, "SHR": 3,
   "CPUID": 1, "CPS": 1, "JE": 4, "JNE": 4,
-  "CMP": 1
+  "CMP": 1, "CALL": 3, "RET": 1
 };
 
 # Lexer:
@@ -234,6 +235,14 @@ def Govnbin(prog: list, labs: dict):
         code.append(labs[prog[pos+1][1]] >> 8);
         code.append(labs[prog[pos+1][1]] % 256);
         pos += 2;
+      elif (prog[pos][1] == "CALL"):
+        code.append(0x06);
+        code.append(labs[prog[pos+1][1]] >> 8);
+        code.append(labs[prog[pos+1][1]] % 256);
+        pos += 2;
+      elif (prog[pos][1] == "RET"):
+        code.append(0x09);
+        pos += 1;
       elif (prog[pos][1] == "INT"):
         code.append(0x23);
         pos += 1;
