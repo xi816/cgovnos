@@ -10,17 +10,18 @@
 
 // Registers structure
 struct Registers {
-  U16 SP;
-  U16 CS;
-  U16 PC;
-  U8 FLAGS;
+  U16 SP;   // Stack pointer
+  U16 CS;   // Common stack
+  U16 PC;   // Program counter
+  U16 A;    // Accumulator
+  U8 FLAGS; // Flags
 };
 
 // CPU structure
 typedef struct GC32 {
   struct Registers regs;
-  U8* mem;
-  U8* rom;
+  U8* mem;  // Memory
+  U8* rom;  // ROM disk
 } GC32;
 
 // CPU functions
@@ -42,8 +43,8 @@ U0 ResetFLAGS(GC32* gccpu) {
 // Write a byte to the screen
 U0 PutByte(U8 a) {
   switch (a) {
-    case 0x0A:
-      putchar(10);
+    case 0x7F:
+      printf("\x08 \x08");
       break;
     default:
       putchar(a);
@@ -180,11 +181,11 @@ U8 Execute(GC32 GC) {
         Arg1 = StackPop(&GC)-1;
         GC.regs.PC = Arg1;
         break;
-      case I_JMI:
+      case I_JMI: {
         U8 condition = FetchByte(&GC, GC.regs.PC+1);
         switch (condition) {
           case B_JMI_EQ:
-            if (StackPop(&GC) == 1) {
+            if (StackPop(&GC) != 0) {
               GC.regs.PC = FetchWordRev(&GC, GC.regs.PC+2)-1;
             }
             else {
@@ -203,7 +204,33 @@ U8 Execute(GC32 GC) {
             fprintf(stderr, "%sUnknown JMI operand: %02X\r\n", ERROR, condition);
             exit(1);
         }
-        break;
+      } break;
+      case I_CALI: {
+        U8 condition = FetchByte(&GC, GC.regs.PC+1);
+        switch (condition) {
+          case B_JMI_EQ: // JMI substructions are the same for CALI
+            if (StackPop(&GC) != 0) {
+              StackPushInl(&GC, GC.regs.PC+4);
+              GC.regs.PC = FetchWordRev(&GC, GC.regs.PC+2)-1;
+            }
+            else {
+              GC.regs.PC += 3;
+            }
+            break;
+          case B_JMI_NEQ:
+            if (StackPop(&GC) == 0) {
+              StackPushInl(&GC, GC.regs.PC+4);
+              GC.regs.PC = FetchWordRev(&GC, GC.regs.PC+2)-1;
+            }
+            else {
+              GC.regs.PC += 3;
+            }
+            break;
+          default:
+            fprintf(stderr, "%sUnknown CALI operand: %02X\r\n", ERROR, condition);
+            exit(1);
+        }
+      } break;
       case I_CMP:
         Arg1 = StackPop(&GC);
         Arg2 = StackPop(&GC);
@@ -280,6 +307,7 @@ U8 Execute(GC32 GC) {
             break;
           default:
             fprintf(stderr, "%sUnknown interrupt %02Xh\r\n", ERROR, call);
+            fprintf(stderr, "  At position %04Xh\r\n", GC.regs.PC);
             return 1;
         }
         break;
@@ -287,6 +315,23 @@ U8 Execute(GC32 GC) {
         Arg1 = StackPop(&GC);
         GC.mem[FetchWordRev(&GC, GC.regs.PC+1)] = Arg1;
         GC.regs.PC += 2;
+        break;
+      case I_LSP:
+        GC.regs.SP = FetchWordRev(&GC, GC.regs.PC+1);
+        GC.regs.PC += 2;
+        break;
+      case I_LCS:
+        GC.regs.CS = FetchWordRev(&GC, GC.regs.PC+1);
+        GC.regs.PC += 2;
+        break;
+      case I_SSP:
+        StackPushInl(&GC, GC.regs.SP);
+        break;
+      case I_SCS:
+        StackPushInl(&GC, GC.regs.CS);
+        break;
+      case I_SPC:
+        StackPushInl(&GC, GC.regs.PC);
         break;
       case 0xA9: // VM special codes
         switch (GC.mem[GC.regs.PC+1]) {
@@ -304,6 +349,7 @@ U8 Execute(GC32 GC) {
         return 1;
     }
     GC.regs.PC++;
+    // printf("\033[32m.PC -> %04X\033[0m\n", GC.regs.PC);
     // StackDump(&GC, 10);
   }
   return 0;

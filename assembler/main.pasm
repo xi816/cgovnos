@@ -30,17 +30,18 @@ KEY = (
   "PUSH", "POP", "ADD", "SUB", "MUL", "DIV",
   "DUP", "INT", "JMP", "JE", "CMP", "CMIM",
   "LODB", "LODW", "REAB", "REAW", "RDD",
-  "SWAP", "SHL", "SHR", "CPUID", "CPS", "JNE",
-  "CALL", "RET"
+  "SWAP", "SHL", "SHR", "CPUID", "CSP", "JNE",
+  "CALL", "RET", "CALE", "CALNE"
 );
 KSZ = {
-  "PUSH": 3, "POP": 1, "ADD": 1, "SUB": 1,
+  "PUSH": 1, "POP": 1, "ADD": 1, "SUB": 1,
   "MUL": 1, "DIV": 1, "DUP": 1, "INT": 1,
-  "JMP": 3, "JMI": 1, "CEQ": 1, "CNEQ": 1,
+  "JMP": 1, "JMI": 1, "CEQ": 1, "CNEQ": 1,
   "LODB": 3, "LODW": 3, "REAB": 3, "REAW": 3,
   "SWAP": 3, "SWAP": 3, "SHL": 3, "SHR": 3,
-  "CPUID": 1, "CPS": 1, "JE": 4, "JNE": 4,
-  "CMP": 1, "CALL": 3, "RET": 1
+  "CPUID": 1, "CSP": 1, "JE": 2, "JNE": 2,
+  "CMP": 1, "CALL": 1, "RET": 1, "CALE": 2,
+  "CALNE": 2
 };
 
 # Lexer:
@@ -51,15 +52,16 @@ def Lex(prog: str):
   proglen = len(prog);
   basemode = 10;
   buf = "";
+  bytesmode = 1;
   while (True):
     if (prog[pos] == "\0"):
+      toks.append((T_EOL,));
       toks.append((T_EOF,));
       return toks, 0;
     elif (prog[pos] == ";"):
       pos += 1;
       while (prog[pos] != "\n"):
         pos += 1;
-      pos += 1;
     elif (prog[pos] == "\""):
       pos += 1;
       while (prog[pos] != "\""):
@@ -85,7 +87,11 @@ def Lex(prog: str):
     elif (prog[pos] == "%"):
       basemode = 16;
       pos += 1;
+    elif (prog[pos] == "#"):
+      basemode = 8;
+      pos += 1;
     elif (prog[pos] == "\n"):
+      bytesmode = 1;
       toks.append((T_EOL,));
       pos += 1;
     elif (prog[pos] in INT):
@@ -95,7 +101,7 @@ def Lex(prog: str):
       toks.append((T_INT, int(buf, base=basemode)));
       basemode = 10;
       buf = "";
-      cpos += 1;
+      cpos += 1+bytesmode;
     elif (prog[pos] in CAP):
       while (prog[pos] in CAP+INT+"-"):
         buf += prog[pos];
@@ -108,9 +114,11 @@ def Lex(prog: str):
           toks.append((T_INS, buf, cpos));
           cpos += KSZ[buf];
         elif (buf == "BYTES"):
-          toks.append((T_BYT, buf, cpos));
+          toks.append((T_BYT, cpos));
+          bytesmode = 0;
         else:
           toks.append((T_0ID, buf));
+          cpos += 2;
       buf = "";
     else:
       print(f"\033[31m    Unknown\033[0m character {hex(ord(prog[pos]))[2:].upper():0>2}");
@@ -159,6 +167,9 @@ def Govnbin(prog: list, labs: dict):
         elif (prog[pos][0] == T_CHR):
           for i in prog[pos][1]:
             code.append(ord(i) % 256);
+        else:
+          print(f"  ERROR: Unknown byte {prog[pos][0]}");
+          return [], 1;
         pos += 1;
       pos += 1;
     elif (prog[pos][0] == T_EOL):
@@ -166,17 +177,15 @@ def Govnbin(prog: list, labs: dict):
     elif (prog[pos][0] == T_INS):
       if (prog[pos][1] == "PUSH"):
         pos += 1;
-        while (prog[pos][0] != T_EOL):
-          if (prog[pos][0] == T_INT):
-            code.append(0x19);
-            code.append(prog[pos][1] >> 8);
-            code.append(prog[pos][1] % 256);
-          elif (prog[pos][0] == T_0ID):
-            val = labs[prog[pos][1]];
-            code.append(0x19);
-            code.append(val >> 8);
-            code.append(val % 256);
-          pos += 1;
+        if (prog[pos][0] == T_INT):
+          code.append(0x19);
+          code.append(prog[pos][1] >> 8);
+          code.append(prog[pos][1] % 256);
+        elif (prog[pos][0] == T_0ID):
+          val = labs[prog[pos][1]];
+          code.append(0x19);
+          code.append(val >> 8);
+          code.append(val % 256);
         pos += 1;
       elif (prog[pos][1] == "POP"):
         code.append(0x1A);
@@ -197,6 +206,18 @@ def Govnbin(prog: list, labs: dict):
         code.append(labs[prog[pos+1][1]] >> 8);
         code.append(labs[prog[pos+1][1]] % 256);
         pos += 2;
+      elif (prog[pos][1] == "CALE"):
+        code.append(0x0A);
+        code.append(0x00);
+        code.append(labs[prog[pos+1][1]] >> 8);
+        code.append(labs[prog[pos+1][1]] % 256);
+        pos += 2;
+      elif (prog[pos][1] == "CALNE"):
+        code.append(0x0A);
+        code.append(0x01);
+        code.append(labs[prog[pos+1][1]] >> 8);
+        code.append(labs[prog[pos+1][1]] % 256);
+        pos += 2;
       elif (prog[pos][1] == "CMP"):
         code.append(0x11);
         pos += 1;
@@ -212,7 +233,7 @@ def Govnbin(prog: list, labs: dict):
       elif (prog[pos][1] == "CPUID"):
         code.append(0x01);
         pos += 1;
-      elif (prog[pos][1] == "CPS"):
+      elif (prog[pos][1] == "CSP"):
         code.append(0x02);
         pos += 1;
       elif (prog[pos][1] == "ADD"):

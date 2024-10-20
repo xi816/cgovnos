@@ -1,5 +1,5 @@
 #ifndef INSTRUCTIONS_H
-#define INSTRUCTIONS_H
+#define INSTRUCTIONS_H 1
 
 // Instruction set
 #define I_NOP        0x00
@@ -12,6 +12,7 @@
 #define I_JMP        0x07
 #define I_JMI        0x08
 #define I_RET        0x09
+#define I_CALI       0x0A
 
 #define I_RDDW       0x10
 #define I_CMP        0x11
@@ -41,11 +42,11 @@
 #define I_LODB       0x35
 #define I_LODW       0x36
 
-#define I_LSP        0x5A
-#define I_LCS        0x5B
-#define I_SSP        0x5C
-#define I_SCS        0x5D
-#define I_SPC        0x5E
+#define I_LSP        0x4A
+#define I_LCS        0x4B
+#define I_SSP        0x4C
+#define I_SCS        0x4D
+#define I_SPC        0x4E
 
 // Interrupts
 #define C_EXIT       0x00

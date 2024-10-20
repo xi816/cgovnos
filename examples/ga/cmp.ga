@@ -1,11 +1,13 @@
 MAIN:
-  PUSH %0A %0A
+  PUSH %0A
+  PUSH %0A
   CMP
   DUP
   JE FOO
   JNE MAIN
 FOO:
   POP
-  PUSH 0 0
+  PUSH %00
+  PUSH %00
   INT
 

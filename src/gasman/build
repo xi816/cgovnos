@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 build () {
-	gcc main.c -o govnasm;
+  gcc -lcurses main.c -o ../../gasman;
 }
 
 # Build

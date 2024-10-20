@@ -2,10 +2,10 @@ JMP MAIN
   HELLO: BYTES "Hello, World!$^@"
 MAIN:
   PUSH HELLO
-  PUSH 1
+  PUSH %01
   INT
 
-  PUSH 0
-  PUSH 0
+  PUSH %00
+  PUSH %00
   INT
 

@@ -6,6 +6,7 @@ MAIN:
   PUSH 2
   INT
 
-  PUSH 0 0
+  PUSH %00
+  PUSH %00
   INT
 
