@@ -201,7 +201,7 @@ U8 Execute(GC32 GC) {
             }
             break;
           default:
-            fprintf(stderr, "%sUnknown JMI operand: %02X\r\n", ERROR, condition);
+            fprintf(stderr, "%sUnknown JMI operand: %02X\n", ERROR, condition);
             exit(1);
         }
       } break;
@@ -227,7 +227,7 @@ U8 Execute(GC32 GC) {
             }
             break;
           default:
-            fprintf(stderr, "%sUnknown CALI operand: %02X\r\n", ERROR, condition);
+            fprintf(stderr, "%sUnknown CALI operand: %02X\n", ERROR, condition);
             exit(1);
         }
       } break;
@@ -301,13 +301,13 @@ U8 Execute(GC32 GC) {
                 printf("\033[H\033[2J");
                 break;
               default:
-                fprintf(stderr, "%sUnknown video interrupt %02Xh\r\n", ERROR, Arg1);
+                fprintf(stderr, "%sUnknown video interrupt %02Xh\n", ERROR, Arg1);
                 return 1;
             }
             break;
           default:
-            fprintf(stderr, "%sUnknown interrupt %02Xh\r\n", ERROR, call);
-            fprintf(stderr, "  At position %04Xh\r\n", GC.regs.PC);
+            fprintf(stderr, "%sUnknown interrupt %02Xh\n", ERROR, call);
+            fprintf(stderr, "  At position %04Xh\n", GC.regs.PC);
             return 1;
         }
         break;
@@ -333,19 +333,19 @@ U8 Execute(GC32 GC) {
       case I_SPC:
         StackPushInl(&GC, GC.regs.PC);
         break;
-      case 0xA9: // VM special codes
+      case 0xA9: // Special VM codes
         switch (GC.mem[GC.regs.PC+1]) {
           case 0x55:
             while (1) {}
           case 0x56:
             GC.regs.PC = 0x7FFF;
           default:
-            fprintf(stderr, "%sUnknown VM code %02X\r\n  At position %04X\r\n", ERROR, GC.mem[GC.regs.PC+1], GC.regs.PC+1);
+            fprintf(stderr, "%sUnknown VM code %02X\n  At position %04X\n", ERROR, GC.mem[GC.regs.PC+1], GC.regs.PC+1);
             return 1;
         }
         break;
       default:
-        fprintf(stderr, "%sUnknown instruction %02X\r\n  At position %04X\r\n", ERROR, GC.mem[GC.regs.PC], GC.regs.PC);
+        fprintf(stderr, "%sUnknown instruction %02X\n  At position %04X\n", ERROR, GC.mem[GC.regs.PC], GC.regs.PC);
         return 1;
     }
     GC.regs.PC++;
