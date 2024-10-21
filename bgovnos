@@ -4,7 +4,7 @@
 # Show executed commands
 set -xe
 
-# Build the CGovnOS virtual machine
+# Build the GovnOS oeprating system
   # Debug modes:
   #   -D: show compilation success
   #   -F: show everyting

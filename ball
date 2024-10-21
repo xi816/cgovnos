@@ -7,6 +7,12 @@ set -xe
 # Build the CGovnOS virtual machine
 ./build
 
+# Build the GovnOS operating system
+  # Debug modes:
+  #   -D: show compilation success
+  #   -F: show everyting
+./gasmbb GOVNOS/BOOT.ASM GOVNOS/BOOT.B $1
+
 # Build GASMAN
 cd src/gasman/
 ./build
