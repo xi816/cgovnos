@@ -1,0 +1,14 @@
+#!/usr/bin/bash
+# Build all of the programs
+
+# Show executed commands
+set -xe
+
+# Build the CGovnOS virtual machine
+./build
+
+# Build GASMAN
+cd src/gasman/
+./build
+cd ../../
+
