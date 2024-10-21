@@ -31,7 +31,8 @@ KEY = (
   "DUP", "INT", "JMP", "JE", "CMP", "CMIM",
   "LODB", "LODW", "REAB", "REAW", "RDD",
   "SWAP", "SHL", "SHR", "CPUID", "CSP", "JNE",
-  "CALL", "RET", "CALE", "CALNE"
+  "CALL", "RET", "CALE", "CALNE", "LSP", "LCS",
+  "SSP", "SCS", "SPC"
 );
 KSZ = {
   "PUSH": 1, "POP": 1, "ADD": 1, "SUB": 1,
@@ -41,7 +42,8 @@ KSZ = {
   "SWAP": 3, "SWAP": 3, "SHL": 3, "SHR": 3,
   "CPUID": 1, "CSP": 1, "JE": 2, "JNE": 2,
   "CMP": 1, "CALL": 1, "RET": 1, "CALE": 2,
-  "CALNE": 2
+  "CALNE": 2, "LSP": 1, "LCS": 1, "SSP": 1,
+  "SCS": 1, "SPC": 1
 };
 
 # Lexer:
@@ -189,6 +191,21 @@ def Govnbin(prog: list, labs: dict):
         pos += 1;
       elif (prog[pos][1] == "POP"):
         code.append(0x1A);
+        pos += 1;
+      elif (prog[pos][1] == "LSP"):
+        code.append(0x4A);
+        pos += 1;
+      elif (prog[pos][1] == "LCS"):
+        code.append(0x4B);
+        pos += 1;
+      elif (prog[pos][1] == "SSP"):
+        code.append(0x4C);
+        pos += 1;
+      elif (prog[pos][1] == "SCS"):
+        code.append(0x4D);
+        pos += 1;
+      elif (prog[pos][1] == "SSP"):
+        code.append(0x4E);
         pos += 1;
       elif (prog[pos][1] == "SHL"):
         code.append(0x03);
