@@ -1,7 +1,7 @@
 /*
- * main.c
+ * main.c - CGovnOS virtual machine
  *
- * Copyright 2024 Xi816 <bulka@poco>
+ * Copyright 2024 Xi816 <xi816/cgovnos>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

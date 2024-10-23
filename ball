@@ -13,6 +13,11 @@ set -xe
   #   -F: show everyting
 ./gasmbb GOVNOS/BOOT.ASM GOVNOS/BOOT.B $1
 
+# Build mkfs.govnfs
+cd src/mkfs.govnfs/
+./build
+cd ../../
+
 # Build GASMAN
 cd src/gasman/
 ./build
