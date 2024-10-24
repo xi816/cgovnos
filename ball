@@ -18,6 +18,11 @@ cd src/mkfs.govnfs/
 ./build
 cd ../../
 
+# Build gboot
+cd src/gboot/
+./build
+cd ../../
+
 # Build GASMAN
 cd src/gasman/
 ./build
