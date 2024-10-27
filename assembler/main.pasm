@@ -3,6 +3,8 @@
 import os;
 import sys;
 
+from random import choice;
+
 # Tokens:
 T_INS = 0x00;
 T_INT = 0x01;
@@ -45,9 +47,15 @@ KSZ = {
   "CALNE": 2, "LSP": 1, "LCS": 1, "SSP": 1,
   "SCS": 1, "SPC": 1
 };
+COMPLS = ["You are so nice!", "Have a nice day!"];
+
+# Compliments generator:
+def GenCompl():
+  return choice(COMPLS);
 
 # Lexer:
 def Lex(prog: str):
+  prog += "\n\0";
   toks = [];
   pos = 0;
   cpos = 0;
@@ -327,7 +335,7 @@ def Main(argc: int, argv: list):
   code, exitcode00 = Govnbin(tokens, labs);
   if (DBGMODE > 0):
     if (not exitcode00):
-      print(f"  File {progname} compiled \033[32msuccesfully\033[0m");
+      print(f"  File {progname} compiled \033[32msuccesfully\033[0m\n  {GenCompl()}");
     else:
       print(f"  File {progname} compiled \033[31munsuccesfully\033[0m");
       return 1;

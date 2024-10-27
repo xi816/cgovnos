@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 build () {
-  gcc main.c -o ../../gboot;
+  gcc main.c -o ../../gboot "$@";
 }
 
 # Build

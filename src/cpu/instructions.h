@@ -67,4 +67,3 @@
 #define B_JMI_NEQ    0x01
 
 #endif
-

@@ -14,7 +14,7 @@
 #define I32 int
 #define I64 long long int
 
-I8 GFS_HEADER_FULL[] = "\x89GOVNFS1.0  \x12\x34\xA4\x20";
+I8 GFS_HEADER_FULL[] = "\x89GOVNFS1.0  \x12\x34\xA4\x20\x7F"; // 7F is File Table End
 
 U0 blocksIn(U16 blocks) {
   printf("%d blocks read\n", blocks);
@@ -31,6 +31,7 @@ U16 writeHeader(U8* buf, U16 startAddr) {
 I32 main(I32 argc, I8** argv) {
   printf("mkfs.govnfs 1.0\n");
   U16 blocks = 0; // Max drive size is limited to 32MB
+  U16 startInd = 0;
   if (argc == 1) {
     fprintf(stderr, "No file given\n");
     blocksIn(blocks);
@@ -43,17 +44,22 @@ I32 main(I32 argc, I8** argv) {
     return 1;
   }
   fseek(drvfile, 0, SEEK_END); // Read the drive
-  U16 drvlen = ftell(drvfile);
+  U32 drvlen = ftell(drvfile);
   U8 drvbuf[drvlen];
   blocks = drvlen/512;
   fseek(drvfile, 0, SEEK_SET);
   fread(drvbuf, 1, drvlen, drvfile);
   blocksIn(blocks);
 
-  writeHeader(drvbuf, 0);
+  writeHeader(drvbuf, startInd);
+  printf("Bus start: %d\nBus end: %d\n", startInd+sizeof(GFS_HEADER_FULL), sizeof(drvbuf));
+  for (U32 bus = startInd+sizeof(GFS_HEADER_FULL); bus < sizeof(drvbuf); bus++) {
+    drvbuf[bus] = 0;
+  }
+
   fseek(drvfile, 0, SEEK_SET);
   U16 blockso = fwrite(drvbuf, 1, sizeof(drvbuf), drvfile)/512;
-  blocksOut(blockso); // Write the header
+  blocksOut(blockso);
   fclose(drvfile);
 
   return 0;

@@ -24,7 +24,7 @@
 #include "../lib/namings.h"
 #include "../lib/flsize.h"
 
-U16 memsize = 0;
+U16 memsize;
 #include "cpu/cpu.h"
 #include "cpu/instructions.h"
 #include "doc/usage.h"
@@ -37,7 +37,6 @@ I32 main(I32 argc, I8** argv) {
 
   U8 romfn[64];
   U8 memfn[64];
-  U8 nofallback = 0;
 
   while (argp < argc) {
     if (!strcmp(argv[argp], "-M")) {
@@ -48,12 +47,7 @@ I32 main(I32 argc, I8** argv) {
       romsize = atoi(argv[argp+1]);
       argp++;
     }
-    else if (!strcmp(argv[argp], "-n")) {
-      FILE* romfile = fopen(romfn, "rb");
-      nofallback = 1;
-      break;
-    }
-    else if (!strcmp(argv[argp], "-h")) {
+    else if (!strcmp(argv[argp], "-H")) {
       Usage();
       return 100;
     }
@@ -78,9 +72,7 @@ I32 main(I32 argc, I8** argv) {
     fprintf(stderr, "%sMemory file %s not found\n", ERROR, memfn);
     return 2;
   }
-  if (memsize == 0) {
-    memsize = FileSize(memfile);
-  }
+  memsize = FileSize(memfile);
 
   GC.rom = malloc(romsize);
   GC.mem = malloc(memsize);
