@@ -1,0 +1,16 @@
+GovnOS installation guide
+
+1. Create the drive
+  First, you need to create the disk:
+  $ touch DISK.img
+  $ truncate -s 64k DISK.img
+
+2. Format the drive to GovnFS
+  NOTE: Make sure you added $CGOVNOS/bin to PATH.
+  $ mkfs.govnfs DISK.img
+
+3. Copy the bootloader into the drive
+  $ gboot DISK.img GOVNOS/BOOT.B
+
+4. Start CGovnOS virtual machine
+  $ gc16 -M 4096 -n DISK.img
