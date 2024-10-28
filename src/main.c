@@ -24,16 +24,16 @@
 #include "../lib/namings.h"
 #include "../lib/flsize.h"
 
-U16 memsize = 0;
+U32 memsize = 0;
 #include "cpu/cpu.h"
 #include "cpu/instructions.h"
 #include "doc/usage.h"
 
 I32 main(I32 argc, I8** argv) {
-  GC32 GC;
+  GC16 GC;
 
   U8 argp = 1;
-  U16 romsize = 4096;
+  U32 romsize = 65536;
 
   U8 romfn[64];
   U8 memfn[64];
@@ -49,7 +49,7 @@ I32 main(I32 argc, I8** argv) {
       argp++;
     }
     else if (!strcmp(argv[argp], "-n")) {
-      FILE* romfile = fopen(romfn, "rb");
+      memcpy(romfn, argv[argp+1], 64);
       nofallback = 1;
       break;
     }
@@ -58,6 +58,7 @@ I32 main(I32 argc, I8** argv) {
       return 100;
     }
     else {
+      printf("Found argument: %s\n", argv[argp]);
       if (argp == argc-1) {
         fprintf(stderr, "%sNo memory file provided\n", ERROR);
         return 1;
@@ -69,17 +70,28 @@ I32 main(I32 argc, I8** argv) {
     argp++;
   }
   FILE* romfile = fopen(romfn, "rb");
-  FILE* memfile = fopen(memfn, "rb");
+  FILE* memfile = NULL;
+  if (!nofallback) {
+    memfile = fopen(memfn, "rb");
+  }
   if (!romfile) {
     fprintf(stderr, "%sROM file %s not found\n", ERROR, romfn);
     return 2;
   }
-  if (!memfile) {
-    fprintf(stderr, "%sMemory file %s not found\n", ERROR, memfn);
-    return 2;
+  if (!nofallback) {
+    if (!memfile) {
+      fprintf(stderr, "%sMemory file %s not found\n", ERROR, memfn);
+      return 2;
+    }
   }
   if (memsize == 0) {
-    memsize = FileSize(memfile);
+    if (!nofallback) {
+      memsize = FileSize(memfile);
+    }
+    else {
+      fprintf(stderr, "%sMemory size not provided\n", ERROR);
+      return 1;
+    }
   }
 
   GC.rom = malloc(romsize);
@@ -88,10 +100,15 @@ I32 main(I32 argc, I8** argv) {
   // Read the ROM file
   fread(GC.rom, 1, romsize, romfile);
   fclose(romfile);
+  if (nofallback) {
+    LoadBootableDrive(&GC);
+  }
 
   // Read the memory
-  fread(GC.mem, 1, memsize, memfile);
-  fclose(memfile);
+  if (!nofallback) {
+    fread(GC.mem, 1, memsize, memfile);
+    fclose(memfile);
+  }
 
   new_st;
 

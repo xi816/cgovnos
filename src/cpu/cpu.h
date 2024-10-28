@@ -18,25 +18,25 @@ struct Registers {
 };
 
 // CPU structure
-typedef struct GC32 {
+typedef struct GC16 {
   struct Registers regs;
   U8* mem;  // Memory
   U8* rom;  // ROM disk
-} GC32;
+} GC16;
 
 // CPU functions
 // Reset the SP register
-U0 ResetSP(GC32* gccpu) {
+U0 ResetSP(GC16* gccpu) {
   gccpu->regs.SP = 0xFFFF;
 }
 
 // Reset the PC register
-U0 ResetPC(GC32* gccpu) {
+U0 ResetPC(GC16* gccpu) {
   gccpu->regs.PC = 0x0000;
 }
 
 // Reset flags
-U0 ResetFLAGS(GC32* gccpu) {
+U0 ResetFLAGS(GC16* gccpu) {
   gccpu->regs.FLAGS = 0x00;
 }
 
@@ -52,33 +52,33 @@ U0 PutByte(U8 a) {
 }
 
 // Fetch a byte from memory and return it
-U8 FetchByte(GC32* gccpu, U16 addr) {
+U8 FetchByte(GC16* gccpu, U16 addr) {
   return gccpu->mem[addr];
 }
 
 // Fetch a word (16 bits) from memory and return it
-U16 FetchWord(GC32* gccpu, U16 addr) {
+U16 FetchWord(GC16* gccpu, U16 addr) {
   return ((gccpu->mem[addr]) << 8) + (gccpu->mem[addr-1]);
 }
 
 // Fetch a word (16 bits) in reverse order from memory and return it
-U16 FetchWordRev(GC32* gccpu, U16 addr) {
+U16 FetchWordRev(GC16* gccpu, U16 addr) {
   return ((gccpu->mem[addr]) << 8) + (gccpu->mem[addr+1]);
 }
 
 // Put a byte into the memory
-U8 WriteByte(GC32* gccpu, U16 addr, U8 val) {
+U8 WriteByte(GC16* gccpu, U16 addr, U8 val) {
   gccpu->mem[addr] = val;
 }
 
 // Put a word (16 bits) into the memory
-U16 PutWord(GC32* gccpu, U16 addr, U16 val) {
+U16 PutWord(GC16* gccpu, U16 addr, U16 val) {
   gccpu->mem[addr] = val >> 8;
   gccpu->mem[addr-1] = val % 256;
 }
 
 // Push a word (16 bits) into the stack
-U0 StackPush(GC32* gccpu) {
+U0 StackPush(GC16* gccpu) {
   gccpu->mem[gccpu->regs.SP] = (gccpu->mem[gccpu->regs.PC+1]);
   gccpu->mem[gccpu->regs.SP-1] = (gccpu->mem[gccpu->regs.PC+2]);
   gccpu->regs.SP -= 2;
@@ -86,25 +86,25 @@ U0 StackPush(GC32* gccpu) {
 }
 
 // Push a word (16 bits) into the stack
-U0 StackPushInl(GC32* gccpu, I16 val) {
+U0 StackPushInl(GC16* gccpu, I16 val) {
   gccpu->mem[gccpu->regs.SP] = (val >> 8);
   gccpu->mem[gccpu->regs.SP-1] = (val % 256);
   gccpu->regs.SP -= 2;
 }
 
 // Pop a word (16 bits) from the stack
-U16 StackPop(GC32* gccpu) {
+U16 StackPop(GC16* gccpu) {
   gccpu->regs.SP += 2;
   return FetchWord(gccpu, gccpu->regs.SP);
 }
 
 // Duplicate a word (16 bits) in the stack
-U0 StackDup(GC32* gccpu) {
+U0 StackDup(GC16* gccpu) {
   StackPushInl(gccpu, FetchWord(gccpu, gccpu->regs.SP+2));
 }
 
 // Swap two words (16 bits) in the stack
-U0 StackSwap(GC32* gccpu) {
+U0 StackSwap(GC16* gccpu) {
   I16 a = StackPop(gccpu);
   I16 b = StackPop(gccpu);
   StackPushInl(gccpu, a);
@@ -112,7 +112,7 @@ U0 StackSwap(GC32* gccpu) {
 }
 
 // Add two word values (16 bits) in the stack
-U0 StackAdd(GC32* gccpu) {
+U0 StackAdd(GC16* gccpu) {
   U16 a = FetchWord(gccpu, gccpu->regs.SP+4);
   U16 b = FetchWord(gccpu, gccpu->regs.SP+2);
   PutWord(gccpu, gccpu->regs.SP+4, a+b);
@@ -120,7 +120,7 @@ U0 StackAdd(GC32* gccpu) {
 }
 
 // Subtract two word values (16 bits) in the stack
-U0 StackSub(GC32* gccpu) {
+U0 StackSub(GC16* gccpu) {
   U16 a = FetchWord(gccpu, gccpu->regs.SP+4);
   U16 b = FetchWord(gccpu, gccpu->regs.SP+2);
   PutWord(gccpu, gccpu->regs.SP+4, a-b);
@@ -128,7 +128,7 @@ U0 StackSub(GC32* gccpu) {
 }
 
 // Multiply two word values (16 bits) in the stack
-U0 StackMul(GC32* gccpu) {
+U0 StackMul(GC16* gccpu) {
   U16 a = FetchWord(gccpu, gccpu->regs.SP+4);
   U16 b = FetchWord(gccpu, gccpu->regs.SP+2);
   PutWord(gccpu, gccpu->regs.SP+4, a*b);
@@ -136,15 +136,23 @@ U0 StackMul(GC32* gccpu) {
 }
 
 // Divide two word values (16 bits) in the stack
-U0 StackDiv(GC32* gccpu) {
+U0 StackDiv(GC16* gccpu) {
   U16 a = FetchWord(gccpu, gccpu->regs.SP+4);
   U16 b = FetchWord(gccpu, gccpu->regs.SP+2);
   PutWord(gccpu, gccpu->regs.SP+4, a/b);
   gccpu->regs.SP += 2;
 }
 
+U0 LoadBootableDrive(GC16* gccpu) {
+  U16 ind = 0x8000;
+  while (gccpu->rom[ind] != 0xFF) {
+    gccpu->mem[ind-0x8000] = gccpu->rom[ind];
+    ind++;
+  }
+}
+
 #include "../dumps.h"
-U8 Execute(GC32 GC) {
+U8 Execute(GC16 GC) {
   U16 Arg1;
   U16 Arg2;
 
@@ -349,7 +357,7 @@ U8 Execute(GC32 GC) {
         return 1;
     }
     GC.regs.PC++;
-    // printf("\033[32m.PC -> %04X\033[0m\n", GC.regs.PC);
+    // printf("\033[32mPC[%04X] = %02X\033[0m\n", GC.regs.PC, GC.mem[GC.regs.PC]);
     // StackDump(&GC, 10);
   }
   return 0;
