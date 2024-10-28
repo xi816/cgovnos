@@ -14,6 +14,9 @@ struct Registers {
   U16 CS;   // Common stack
   U16 PC;   // Program counter
   U16 A;    // Accumulator
+  U16 B;    // Base
+  U16 C;    // Counter
+  U16 D;    //
   U8 FLAGS; // Flags
 };
 
@@ -272,8 +275,20 @@ U8 Execute(GC16 GC) {
       case I_DIV:
         StackDiv(&GC);
         break;
+      case I_RDDB:
+        StackPushInl(&GC, GC.rom[FetchWordRev(&GC, GC.regs.PC+1)]%256);
+        GC.regs.PC += 2;
+        break;
       case I_REAB:
         StackPushInl(&GC, GC.mem[FetchWordRev(&GC, GC.regs.PC+1)]%256);
+        GC.regs.PC += 2;
+        break;
+      case I_RDDW:
+        StackPushInl(&GC, GC.rom[FetchWordRev(&GC, GC.regs.PC+1)]);
+        GC.regs.PC += 2;
+        break;
+      case I_RDDWR:
+        StackPushInl(&GC, GC.rom[FetchWord(&GC, GC.regs.PC+1)]);
         GC.regs.PC += 2;
         break;
       case I_REAW:

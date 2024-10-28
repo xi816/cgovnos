@@ -36,8 +36,9 @@
 #define I_REAW       0x22
 #define I_INT        0x23
 #define I_DIV        0x24
-#define I_RDDBB      0x25
-#define I_RDDWR      0x26
+#define I_RDDWR      0x25
+#define I_INC        0x26
+#define I_DEC        0x27
 
 #define I_LODB       0x35
 #define I_LODW       0x36

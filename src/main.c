@@ -44,6 +44,15 @@ I32 main(I32 argc, I8** argv) {
       memsize = atoi(argv[argp+1]);
       argp++;
     }
+    else if (!strcmp(argv[argp], "-Md")) {
+      memsize = 65536; // Memory model: default, max (65KB)
+    }
+    else if (!strcmp(argv[argp], "-Ms")) {
+      memsize = 4096; // Memory model: small (4KB)
+    }
+    else if (!strcmp(argv[argp], "-M8bc")) {
+      memsize = 4096; // Memory model: 8-bit compatibility (256B)
+    }
     else if (!strcmp(argv[argp], "-ROM")) {
       romsize = atoi(argv[argp+1]);
       argp++;
@@ -58,7 +67,6 @@ I32 main(I32 argc, I8** argv) {
       return 100;
     }
     else {
-      printf("Found argument: %s\n", argv[argp]);
       if (argp == argc-1) {
         fprintf(stderr, "%sNo memory file provided\n", ERROR);
         return 1;
@@ -122,3 +130,4 @@ I32 main(I32 argc, I8** argv) {
   old_st;
   return exitcode;
 }
+

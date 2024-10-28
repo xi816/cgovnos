@@ -52,7 +52,6 @@ I32 main(I32 argc, I8** argv) {
   blocksIn(blocks);
 
   writeHeader(drvbuf, startInd);
-  printf("Bus start: %d\nBus end: %d\n", startInd+sizeof(GFS_HEADER_FULL), sizeof(drvbuf));
   for (U32 bus = startInd+sizeof(GFS_HEADER_FULL); bus < sizeof(drvbuf); bus++) {
     drvbuf[bus] = 0;
   }
