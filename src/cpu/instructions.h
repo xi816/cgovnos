@@ -49,6 +49,18 @@
 #define I_SCS        0x4D
 #define I_SPC        0x4E
 
+#define I_LDA        0xA0
+#define I_LDB        0xA1
+#define I_LDC        0xA2
+#define I_LDD        0xA3
+#define I_LSR        0xA4
+
+#define I_ADA        0xB0
+#define I_ADB        0xB1
+#define I_ADC        0xB2
+#define I_AAD        0xB3
+#define I_PSR        0xB4
+
 // Interrupts
 #define C_EXIT       0x00
 #define C_WRITE      0x01

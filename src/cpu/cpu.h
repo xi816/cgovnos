@@ -16,7 +16,7 @@ struct Registers {
   U16 A;    // Accumulator
   U16 B;    // Base
   U16 C;    // Counter
-  U16 D;    //
+  U16 D;    // Data
   U8 FLAGS; // Flags
 };
 

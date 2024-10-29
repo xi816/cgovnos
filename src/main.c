@@ -51,7 +51,7 @@ I32 main(I32 argc, I8** argv) {
       memsize = 4096; // Memory model: small (4KB)
     }
     else if (!strcmp(argv[argp], "-M8bc")) {
-      memsize = 4096; // Memory model: 8-bit compatibility (256B)
+      memsize = 256; // Memory model: 8-bit compatibility (256B)
     }
     else if (!strcmp(argv[argp], "-ROM")) {
       romsize = atoi(argv[argp+1]);
