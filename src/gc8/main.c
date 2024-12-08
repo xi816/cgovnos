@@ -1,5 +1,5 @@
 /*
- * main.c - CGovnOS virtual machine for Govno Core 16
+ * main.c - CGovnOS virtual machine for Govno Core 8
  *
  * Copyright 2024 Xi816 <xi816/cgovnos>
  *
@@ -20,14 +20,11 @@
 #include <string.h>
 #include <termios.h>
 
-#define WINW 640
-#define WINH 480
-
 #include "main.h"
 #include "../lib/namings.h"
 #include "../lib/flsize.h"
 
-U32 memsize = 0;
+U16 memsize = 0;
 #include "cpu/cpu.h"
 #include "cpu/instructions.h"
 #include "doc/usage.h"
@@ -36,11 +33,10 @@ I32 main(I32 argc, I8** argv) {
   GC16 GC;
 
   U8 argp = 1;
-  U32 romsize = 65536;
+  U16 romsize = 8192;
 
   U8 romfn[64];
   U8 memfn[64];
-  U8 gmode = 0;
   U8 nofallback = 0;
 
   while (argp < argc) {
@@ -48,21 +44,18 @@ I32 main(I32 argc, I8** argv) {
       memsize = atoi(argv[argp+1]);
       argp++;
     }
-    else if (!strcmp(argv[argp], "-Md")) {
-      memsize = 65536; // Memory model: default, max (64KB)
+    else if (!strcmp(argv[argp], "-Mt")) {
+      memsize = 256;  // Memory model: tiny, (256B)
     }
     else if (!strcmp(argv[argp], "-Ms")) {
-      memsize = 4096; // Memory model: small (4KB)
+      memsize = 1024; // Memory model: small (1KB)
     }
-    else if (!strcmp(argv[argp], "-M8bc")) {
-      memsize = 256; // Memory model: 8-bit compatibility (256B)
+    else if (!strcmp(argv[argp], "-Mb")) {
+      memsize = 8192; // Memory model: big (8KB)
     }
     else if (!strcmp(argv[argp], "-ROM")) {
       romsize = atoi(argv[argp+1]);
       argp++;
-    }
-    else if (!strcmp(argv[argp], "-g")) {
-      gmode = true;
     }
     else if (!strcmp(argv[argp], "-n")) {
       memcpy(romfn, argv[argp+1], 64);
@@ -126,24 +119,13 @@ I32 main(I32 argc, I8** argv) {
   }
 
   new_st;
-  SDL_Init(SDL_INIT_EVERYTHING);
-  SDL_Window* win = NULL;
-  SDL_Renderer* renderer = NULL;
-  if (gmode) {
-    win = SDL_CreateWindow(
-        "govnos", 100, 100, WINW, WINH, SDL_WINDOW_SHOWN);
-    renderer = SDL_CreateRenderer(
-        win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-  }
-  else {
-  }
 
   initCPU:
   ResetSP(&GC);
   ResetPC(&GC);
 
   runProgram:
-  U8 exitcode = Execute(GC, win, renderer);
+  U8 exitcode = Execute(GC);
 
   old_st;
   return exitcode;

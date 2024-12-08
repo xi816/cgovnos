@@ -1,5 +1,5 @@
-#ifndef INSTRUCTIONS_H
-#define INSTRUCTIONS_H 1
+#ifndef INST8_H
+#define INST8_H 1
 
 // Instruction set
 #define I_NOP        0x00
@@ -14,7 +14,6 @@
 #define I_RET        0x09
 #define I_CALI       0x0A
 
-#define I_RDDW       0x10
 #define I_CMP        0x11
 #define I_CMIM       0x12
 #define I_AND        0x13
@@ -33,15 +32,12 @@
 
 #define I_RDDB       0x20
 #define I_REAB       0x21
-#define I_REAW       0x22
 #define I_INT        0x23
 #define I_DIV        0x24
-#define I_RDDWR      0x25
 #define I_INC        0x26
 #define I_DEC        0x27
 
 #define I_LODB       0x35
-#define I_LODW       0x36
 
 #define I_LSP        0x4A
 #define I_LCS        0x4B
@@ -74,10 +70,10 @@
 // VIDEO interrupts
 #define INT_VIDEO_CLEAR            0x00
 #define INT_VIDEO_SLEEP            0x0A
-#define INT_VIDEO_CLGR             0x0B
 
 // JMI condition table
 #define B_JMI_EQ     0x00
 #define B_JMI_NEQ    0x01
 
 #endif
+

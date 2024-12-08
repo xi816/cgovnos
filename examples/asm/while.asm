@@ -1,0 +1,26 @@
+MAIN:
+  PUSH 10
+LOOP:
+  ; Condition
+  DUP
+  PUSH 0
+  CMP
+  JE END
+  ; Body
+  PUSH 1
+  SUB
+  PUSH 69
+  PUSH 2
+  INT
+  PUSH 255
+  LODB %0C00
+
+  JMP LOOP
+END:
+  PUSH 10
+  PUSH 2
+  INT
+  PUSH 0
+  PUSH 0
+  INT
+

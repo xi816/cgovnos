@@ -1,5 +1,7 @@
 # CGovnOS
 
+This project is deprecated and the new Govno Core 16X processor is at https://github.com/xi816/gc16x/
+
 CGovnOS is a Govno Core 16 processor virtual machine for the GovnOS operating system.
 
 ## Compilation:

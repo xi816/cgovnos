@@ -1,6 +1,5 @@
 // Govno Core 32 CPU
 #include <termios.h>
-#include <SDL2/SDL.h>
 
 #include "../../lib/bool.h"
 #include "../../lib/namings.h"
@@ -156,15 +155,9 @@ U0 LoadBootableDrive(GC16* gccpu) {
 }
 
 #include "../dumps.h"
-U8 Execute(GC16 GC, SDL_Window* win, SDL_Renderer* renderer) {
+U8 Execute(GC16 GC) {
   U16 Arg1;
   U16 Arg2;
-  if (win) {
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-    SDL_RenderClear(renderer);
-    SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-    SDL_RenderPresent(renderer);
-  }
 
   while (true) {
     switch (GC.mem[GC.regs.PC]) {
@@ -323,19 +316,11 @@ U8 Execute(GC16 GC, SDL_Window* win, SDL_Renderer* renderer) {
           case C_VIDEO:
             Arg1 = StackPop(&GC);
             switch (Arg1) {
-              case INT_VIDEO_CLGR:
-                SDL_SetRenderDrawColor(renderer,
-                  StackPop(&GC), StackPop(&GC),
-                  StackPop(&GC), 0xFF);
-                SDL_RenderClear(renderer);
-                SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-                SDL_RenderPresent(renderer);
-                break;
               case INT_VIDEO_SLEEP:
                 Arg2 = StackPop(&GC);
                 sleep(Arg2);
                 break;
-              case INT_VIDEO_CLEAR:
+             case INT_VIDEO_CLEAR:
                 printf("\033[H\033[2J");
                 break;
               default:

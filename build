@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 build () {
-	gcc src/main.c -o gc16;
+	gcc src/main.c -lSDL2 -o gc16;
 }
 
 # Build

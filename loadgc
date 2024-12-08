@@ -1,0 +1,9 @@
+set -xe
+
+gasmbb GOVNOS/BOOT.ASM GOVNOS/BOOT.B $2
+
+touch $1
+truncate -s 64k $1
+mkfs.govnfs $1
+gboot $1 GOVNOS/BOOT.B
+
